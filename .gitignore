@@ -1,4 +1,5 @@
 *.py[cod]
+data/*
 
 # C extensions
 *.so
@@ -62,3 +63,5 @@ sftp-config.json
 
 #Mac .DSStore
 .DS_Store
+
+*.txt

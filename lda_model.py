@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 import sys
-from gensim import corpora, models, similarities
+from gensim import corpora, models
 
 class TrainingCorpus(object):
     def __init__(self, filename = ""):
@@ -29,32 +29,42 @@ class TrainingCorpus(object):
         stop_ids = [_token_dict[stopword] for stopword in _stop_words if stopword in _token_dict]
         self.dict.filter_tokens(once_ids + stop_ids)
         self.dict.compactify()
+        print("Dictionary size:%d"%(len(self.dict)))
         
-        self.corpus = [self.dict.doc2bow(text) for text in _texts]
-        
-        self.ldamodel = models.ldamodel.LdaModel(self.corpus, id2word = self.dict, num_topics=30)
+        _corpus = [self.dict.doc2bow(text) for text in _texts]
+        self.corpus_tfidf = models.TfidfModel(_corpus)[_corpus]
+        print("Doc size:%d"%(len(self.corpus_tfidf.corpus)))
+        print("Building LDA model...")
+        self.ldamodel = models.LdaModel(self.corpus_tfidf, id2word = self.dict, num_topics=30, distributed=True)
+        #self.ldamodel = models.HdpModel(_corpus, id2word = self.dict)
     
     @classmethod
     def load(cls, filename):
         _corpus = cls()
         _corpus.dict = corpora.Dictionary.load(filename + '.dict')
-        _corpus.corpus = corpora.MmCorpus(filename + '.mm')
-        _corpus.ldamodel = models.ldamodel.LdaModel.load(filename + '.lda.model')
+        _corpus.corpus_tfidf = corpora.MmCorpus(filename + '.mm')
+        _corpus.ldamodel = models.LdaModel.load(filename + '.lda.model')
+        #_corpus.ldamodel = models.HdpModel.load(filename + '.lda.model')
         #_corpus.corpus = corpora.BleiCorpus(filename + '.corpus.lda-c')
         
         return _corpus
     
     def save(self, filename):
         self.dict.save(filename + '.dict')
-        corpora.MmCorpus.serialize(filename + '.mm', self.corpus)
+        corpora.MmCorpus.serialize(filename + '.mm', self.corpus_tfidf)
         self.ldamodel.save(filename + '.lda.model')
         #corpora.BleiCorpus.serialize(filename + '.corpus.lda-c', self.corpus)
 
-training_corpus = TrainingCorpus(sys.argv[1])
-training_corpus.save('data/corp')
+corpus = TrainingCorpus(sys.argv[1])
+corpus.save('data/' + sys.argv[1])
+"""
+corpus = TrainingCorpus.load('data/' + sys.argv[1])
+"""
+topics = corpus.ldamodel.show_topics(-1, 20)
+for topic in topics:
+    print topic
 
-saved_corpus = TrainingCorpus.load('data/corp')
-
+"""
 test_comment = u'卫生,条件,设施,比较,可以,北方,酒店,服务,整体,不如,南方,位置,周边,吃饭,点儿,还是,家乐福'
 test_comment_dict = saved_corpus.dict.doc2bow(test_comment.split(','))
 
@@ -63,3 +73,4 @@ if matches:
     matches = sorted(matches, key=lambda item: -item[1])
     print test_comment
     print saved_corpus.ldamodel.print_topic(matches[0][0])
+"""
