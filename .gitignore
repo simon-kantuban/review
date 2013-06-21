@@ -1,6 +1,6 @@
 *.py[cod]
 data/*
-
+model/*
 # C extensions
 *.so
 
