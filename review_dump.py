@@ -28,17 +28,17 @@ LHan = [[0x2E80, 0x2E99],    # Han # So  [26] CJK RADICAL REPEAT, CJK RADICAL RA
         [0x2F800, 0x2FA1D]]  # Han # Lo [542] CJK COMPATIBILITY IDEOGRAPH-2F800, CJK COMPATIBILITY IDEOGRAPH-2FA1D
 
 def build_re():
-    L = []
-    for i in LHan:
-        if isinstance(i, list):
-            f, t = i
-            f = unichr(f)
-            t = unichr(t)
-            L.append('%s-%s' % (f, t))
-        else:
-            L.append(unichr(i))
+	L = []
+	for i in LHan:
+		if isinstance(i, list):
+			f, t = i
+			f = unichr(f)
+			t = unichr(t)
+			L.append('%s-%s' % (f, t))
+		else:
+			L.append(unichr(i))
 
-    return re.compile('[%s]+' % ''.join(L), re.UNICODE)
+	return re.compile('[%s]+' % ''.join(L), re.UNICODE)
 
 chinese_re = build_re()
 
@@ -54,8 +54,8 @@ def format_review(sentence):
 	sentence = re.sub(u'[，、：:,]+', u' ', sentence)
 	sentence = re.sub(u'[。.！!？?；;]+', u' ', sentence)
 	"""
-        #words = re.findall(u'[\u4e00-\u9fff]+', sentence)
-        words = chinese_re.findall(sentence) 
+	#words = re.findall(u'[\u4e00-\u9fff]+', sentence)
+	words = chinese_re.findall(sentence)
 	sentence = ''
 	for (i, word) in enumerate(words):
 		if i > 0:
@@ -81,7 +81,7 @@ def main():
 		db = MySQLdb.connect(host=DB_SERVER,port=DB_SERVER_PORT, user=DB_USER, passwd=DB_PASSWORD, db=DB_NAME, charset='utf8mb4' )
 		cursor = db.cursor()
 		cursor.execute(SQL_QUERY%(sys.argv[1]))
-		for i in range(cursor.rowcount):
+		for _ in range(cursor.rowcount):
 			record = cursor.fetchone()
 			hotel_review = format_review(record[0])
 			if hotel_review:
