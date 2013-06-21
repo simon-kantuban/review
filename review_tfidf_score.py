@@ -73,30 +73,34 @@ class ReviewCorpus(object):
             _total_score += _score
         
         return _total_score
-        
-"""
-corpus = ReviewCorpus(sys.argv[1])
-corpus.save('data/' + sys.argv[1])
 
-"""
-
-corpus = ReviewCorpus.load('model/' + sys.argv[1])
-texts = [
-         u'一,般般', 
-         u'上下,高速,方便,酒店,一般,价格,适中,餐厅,吃饭,比较,实惠,下次,还,会,选择',
-         u'不错,很,便利',
-         u'挺,干净,的,位置,也,很,好'
-        ]
-
-for text in texts:
-    text_tfidf = corpus.corpus_tfidf[corpus.dictionary.doc2bow(text.split(','))]
-    total_score = 0
-    for (_id, _score) in text_tfidf:
-        total_score += _score 
-    
-    print text
-    text_dict = ""
-    for (_id, _tfidf) in text_tfidf:
-        text_dict += "%s[%f]"%(corpus.dictionary[_id], _tfidf) + ","
-    print text_dict
-    print total_score
+def main():
+	"""        
+	corpus = ReviewCorpus(sys.argv[1])
+	corpus.save('model/' + sys.argv[1])
+	
+	"""
+	
+	corpus = ReviewCorpus.load('model/' + sys.argv[1])
+	texts = [
+	         u'一,般般', 
+	         u'上下,高速,方便,酒店,一般,价格,适中,餐厅,吃饭,比较,实惠,下次,还,会,选择',
+	         u'不错,很,便利',
+	         u'挺,干净,的,位置,也,很,好'
+	        ]
+	
+	for text in texts:
+	    text_tfidf = corpus.corpus_tfidf[corpus.dictionary.doc2bow(text.split(','))]
+	    total_score = 0
+	    for (_id, _score) in text_tfidf:
+	        total_score += _score 
+	    
+	    print text
+	    text_dict = ""
+	    for (_id, _tfidf) in text_tfidf:
+	        text_dict += "%s[%f]"%(corpus.dictionary[_id], _tfidf) + ","
+	    print text_dict
+	    print total_score
+	
+if __name__ == '__main__':
+	main()

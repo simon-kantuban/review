@@ -32,16 +32,19 @@ def format_review(sentence):
 	
 	return sentence
 	
-with open(sys.argv[1]+'_dump_unique.csv','w') as dump:
-	db = MySQLdb.connect(host=DB_SERVER,port=DB_SERVER_PORT, user=DB_USER, passwd=DB_PASSWORD, db=DB_NAME, charset='utf8mb4' )
-	cursor = db.cursor()
-	cursor.execute(SQL_QUERY%(sys.argv[1]))
-	for i in range(cursor.rowcount):
-		record = cursor.fetchone()
-		hotel_review = format_review(record[0])
-		if hotel_review:
-			print(record[0])
-			print(hotel_review)
-			dump.write(hotel_review.encode('utf-8') + '\n')
-	db.close()
-	
+def main():
+	with open(sys.argv[1]+'.txt','w') as dump:
+		db = MySQLdb.connect(host=DB_SERVER,port=DB_SERVER_PORT, user=DB_USER, passwd=DB_PASSWORD, db=DB_NAME, charset='utf8mb4' )
+		cursor = db.cursor()
+		cursor.execute(SQL_QUERY%(sys.argv[1]))
+		for i in range(cursor.rowcount):
+			record = cursor.fetchone()
+			hotel_review = format_review(record[0])
+			if hotel_review:
+				print(record[0])
+				print(hotel_review)
+				dump.write(hotel_review.encode('utf-8') + '\n')
+		db.close()
+		
+if __name__ == '__main__':
+	main()
