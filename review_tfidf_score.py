@@ -75,11 +75,10 @@ class ReviewCorpus(object):
         return _total_score
 
 def main():
-    """        
-	corpus = ReviewCorpus(sys.argv[1])
-	corpus.save('model/' + sys.argv[1])
-	
-	"""
+    corpus = ReviewCorpus(sys.argv[1])
+    corpus.save('model/' + sys.argv[1])
+
+"""
 
     corpus = ReviewCorpus.load('model/' + sys.argv[1])
     texts = [
@@ -101,6 +100,6 @@ def main():
             text_dict += "%s[%f]"%(corpus.dictionary[_id], _tfidf) + ","
         print text_dict
         print total_score
-
+"""
 if __name__ == '__main__':
     main()
