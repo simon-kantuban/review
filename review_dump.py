@@ -11,35 +11,37 @@ DB_PASSWORD = "UmkVpysZnsOh9hucwG22"
 DB_NAME = "ptpq" 
 SQL_QUERY = "select distinct(content) from %s"
 
+def format_review(sentence):
+	if (len(sentence) * 1.1) > len(sentence.encode('utf-8')):
+			#Not Chinese review
+			return ''	
+	sentence = re.sub(u'[ \n"\'~@#$%^&*()-_+=|\\{}\[\]<>/～￥……（）]+', '', sentence)
+	sentence = re.sub(u'[，、：:,]+', u' ', sentence)
+	sentence = re.sub(u'[。.！!？?；;]+', u' ', sentence)
+	if sentence:
+		words = word_seg(sentence)
+		for (i, word) in enumerate(words):
+			word = re.sub(' ', '', word)
+			if (len(word) * 1.1) > len(word.encode('utf-8')):
+					#Not Chinese
+				word = ''
+			if i == 0:
+				sentence = word
+			else:
+				sentence += ',' + word		
+	
+	return sentence
+	
 with open(sys.argv[1]+'_dump_unique.csv','w') as dump:
 	db = MySQLdb.connect(host=DB_SERVER,port=DB_SERVER_PORT, user=DB_USER, passwd=DB_PASSWORD, db=DB_NAME, charset='utf8mb4' )
 	cursor = db.cursor()
 	cursor.execute(SQL_QUERY%(sys.argv[1]))
 	for i in range(cursor.rowcount):
 		record = cursor.fetchone()
-		if (len(record[0]) * 1.1) > len(record[0].encode('utf-8')):
-			#Not Chinese review
-			continue
-		#words = word_seg_full(record[1].replace(u'\n', ''))
-		hotel_review = re.sub(u'[ \n"\'~@#$%^&*()-_+=|\\{}\[\]<>/～￥……（）]+', '', record[0])
-        	hotel_review = re.sub(u'[，、：:,]+', u' ', hotel_review)
-		hotel_review = re.sub(u'[。.！!？?；;]+', u' ', hotel_review)
-				
-		words = word_seg(hotel_review)
-		sentence = ""
-		for (i, word) in enumerate(words):
-			word = re.sub(' ', '', word)
-			if (len(word) * 1.1) > len(word.encode('utf-8')):
-				#Not Chinese
-				word = ''
-			if i == 0:
-				sentence = word
-			else:
-				sentence += ',' + word
-
-		if sentence:
+		hotel_review = format_review(record[0])
+		if hotel_review:
+			print(record[0])
 			print(hotel_review)
-			print(sentence)
-			dump.write(sentence.encode('utf-8') + '\n')
+			dump.write(hotel_review.encode('utf-8') + '\n')
 	db.close()
 	

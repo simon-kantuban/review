@@ -65,8 +65,14 @@ class ReviewCorpus(object):
         self.dictionary.save(filename + '.dict')
         self.corpus_tfidf.save(filename + '.tfidf')
     
-    def tfidf_score(self,text):
-        return  self.corpus_tfidf[self.dictionary.doc2bow(text.split(','))] if (self.dictionary and self.corpus_tfidf) else []
+    def tfidf_score(self, text):
+        _scores = self.corpus_tfidf[self.dictionary.doc2bow(text.split(','))] if (self.dictionary and self.corpus_tfidf) else []
+        _total_score = 0
+        
+        for(_, _score) in _scores:
+            _total_score += _score
+        
+        return _total_score
         
 """
 corpus = ReviewCorpus(sys.argv[1])
@@ -83,7 +89,7 @@ texts = [
         ]
 
 for text in texts:
-    text_tfidf = corpus.tfidf_score(text) 
+    text_tfidf = corpus.corpus_tfidf[corpus.dictionary.doc2bow(text.split(','))]
     total_score = 0
     for (_id, _score) in text_tfidf:
         total_score += _score 
