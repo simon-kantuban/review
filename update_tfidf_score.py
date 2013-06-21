@@ -15,7 +15,7 @@ SQL_QUERY = "select id, content from %s"
 SQL_UPDATE = "update %s set tfidf_score=%f where id=%d"
 
 table_name = sys.argv[1]
-corpus = ReviewCorpus.load('data/' + table_name)
+corpus = ReviewCorpus.load('model/' + table_name)
 
 read_con = MySQLdb.connect(host=DB_SERVER,port=DB_SERVER_PORT, user=DB_USER, passwd=DB_PASSWORD, db=DB_NAME, charset='utf8mb4' )
 write_con = MySQLdb.connect(host=DB_SERVER,port=DB_SERVER_PORT, user=DB_USER, passwd=DB_PASSWORD, db=DB_NAME, charset='utf8mb4' )

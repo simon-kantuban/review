@@ -80,7 +80,7 @@ corpus.save('data/' + sys.argv[1])
 
 """
 
-corpus = ReviewCorpus.load('data/' + sys.argv[1])
+corpus = ReviewCorpus.load('model/' + sys.argv[1])
 texts = [
          u'一,般般', 
          u'上下,高速,方便,酒店,一般,价格,适中,餐厅,吃饭,比较,实惠,下次,还,会,选择',
