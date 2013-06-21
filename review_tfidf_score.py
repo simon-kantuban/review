@@ -14,6 +14,8 @@ class StreamCorpus(object):
 class ReviewCorpus(object):
     def __init__(self, filename = ""):
         self.filename = filename
+        self.dictionary = None
+        self.corpus_tfidf = None
         _texts = []
         _stop_words = []
         if not filename:
@@ -62,7 +64,11 @@ class ReviewCorpus(object):
     def save(self, filename):
         self.dictionary.save(filename + '.dict')
         self.corpus_tfidf.save(filename + '.tfidf')
-
+    
+    def tfidf_score(self,text):
+        return  self.corpus_tfidf[self.dictionary.doc2bow(text.split(','))] if (self.dictionary and self.corpus_tfidf) else []
+        
+"""
 corpus = ReviewCorpus(sys.argv[1])
 corpus.save('data/' + sys.argv[1])
 
@@ -77,7 +83,7 @@ texts = [
         ]
 
 for text in texts:
-    text_tfidf = corpus.corpus_tfidf[corpus.dictionary.doc2bow(text.split(','))] 
+    text_tfidf = corpus.tfidf_score(text) 
     total_score = 0
     for (_id, _score) in text_tfidf:
         total_score += _score 
@@ -88,4 +94,3 @@ for text in texts:
         text_dict += "%s[%f]"%(corpus.dictionary[_id], _tfidf) + ","
     print text_dict
     print total_score
-"""
