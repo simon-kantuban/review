@@ -75,11 +75,10 @@ class ReviewCorpus(object):
         return _total_score
 
 def main():
+    
     corpus = ReviewCorpus(sys.argv[1])
     corpus.save('model/' + sys.argv[1])
-
-"""
-
+    """
     corpus = ReviewCorpus.load('model/' + sys.argv[1])
     texts = [
 	         u'一,般般', 
