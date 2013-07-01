@@ -54,7 +54,7 @@ def score_pencentile (db, product_id, table_name):
 	
 def score_5 (db, product_id, table_name):
 	_cursor = db.cursor()
-	_cursor.execute('select avg(score), count(id) from %s where source_id=%s'%(table_name, product_id))
+	_cursor.execute('select avg(score), count(id) from %s where source_id=%s and score > 0'%(table_name, product_id))
 	_review_count = 0
 	_avg_score = -1
 	if _cursor.rowcount > 0:
