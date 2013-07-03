@@ -6,15 +6,12 @@ from mylib.thrift_go import go_tag
 import MySQLdb
 import requests
 
-DB_SERVER = "192.168.0.186"
+DB_SERVER = "cheetah"
 DB_SERVER_PORT = 34890
 DB_USER = "kantuban"
 DB_PASSWORD = "UmkVpysZnsOh9hucwG22"
 DB_NAME = "ptpq"
 POI_IDS_QUERY = "select tag_id from tag_product group by tag_id"
-PRODUCT_IDS_QUERY = "select source, product_id, tag_id from tag_product where tag_id = %d group by source having max(create_date)"
-
-PRODUCT_IDS_HTTP = "http://192.168.0.186:7070/tag_products/%d"
 
 def main():
         db = MySQLdb.connect(host=DB_SERVER,port=DB_SERVER_PORT, user=DB_USER, passwd=DB_PASSWORD, db=DB_NAME)
