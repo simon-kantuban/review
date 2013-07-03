@@ -2,15 +2,16 @@
 import MySQLdb
 import requests
 
-DB_SERVER = "192.168.0.186"
+DB_SERVER = "cheetah"
 DB_SERVER_PORT = 34890
 DB_USER = "kantuban"
 DB_PASSWORD = "UmkVpysZnsOh9hucwG22"
 DB_NAME = "ptpq"
-POI_IDS_QUERY = "select tag_id from tag_product group by tag_id"
+#POI_IDS_QUERY = "select tag_id from tag_product group by tag_id"
+POI_IDS_QUERY = 'select id from poi'
 PRODUCT_IDS_QUERY = "select source, product_id, tag_id from tag_product where tag_id = %d group by source having max(create_date)"
 
-PRODUCT_IDS_HTTP = "http://192.168.0.186:7070/tag_products/%d"
+PRODUCT_IDS_HTTP = "http://lion:7070/tag_products/%d"
 
 """
 ProductSourceTongchengTicket = 1 //同程门票
