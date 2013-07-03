@@ -8,7 +8,8 @@ DB_USER = "kantuban"
 DB_PASSWORD = "UmkVpysZnsOh9hucwG22"
 DB_NAME = "ptpq"
 #POI_IDS_QUERY = "select tag_id from tag_product group by tag_id"
-POI_IDS_QUERY = 'select id from poi'
+POI_IDS_QUERY = 'select poi.id from poi, tag where tag.review_score > 0 and poi.id=tag.id'
+
 PRODUCT_IDS_QUERY = "select source, product_id, tag_id from tag_product where tag_id = %d group by source having max(create_date)"
 
 PRODUCT_IDS_HTTP = "http://lion:7070/tag_products/%d"
