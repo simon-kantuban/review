@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 import MySQLdb
 import requests
+from common.client_proxy import req_proxy_tag
 
 DB_SERVER = "cheetah"
 DB_SERVER_PORT = 34890
@@ -122,14 +123,19 @@ def get_product_ids(poi_id):
 	else:
 		return []
 
+'''
 def update_review_score(db, poi_id, score):
 	_cursor = db.cursor()
 	_cursor.execute("update tag set review_score=%f where id=%d"%(score, poi_id))
 	db.commit()
+'''
+	
+def update_review_score(poi_id, score):
+	req_proxy_tag.TagSetFields(poi_id, {'ReviewScore':str(score)})
 
 def main():
 	db = MySQLdb.connect(host=DB_SERVER,port=DB_SERVER_PORT, user=DB_USER, passwd=DB_PASSWORD, db=DB_NAME)
-	write_db = MySQLdb.connect(host=DB_SERVER,port=DB_SERVER_PORT, user=DB_USER, passwd=DB_PASSWORD, db=DB_NAME)
+	#write_db = MySQLdb.connect(host=DB_SERVER,port=DB_SERVER_PORT, user=DB_USER, passwd=DB_PASSWORD, db=DB_NAME)
 	poi_cursor = db.cursor()
 	poi_cursor.execute(POI_IDS_QUERY)
 	
@@ -146,9 +152,10 @@ def main():
 			_score = get_score(db, product_ids)
 			if _score > 0:
 				print _score
-				update_review_score(write_db, poi_record[0], _score)
+				#update_review_score(write_db, poi_record[0], _score)
+				update_review_score(poi_record[0], _score)
 	
-	write_db.close()
+	#write_db.close()
 	
 	poi_cursor.close()
 	#product_cursor.close()
