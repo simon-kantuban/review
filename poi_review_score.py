@@ -145,12 +145,14 @@ def update_review_score(poi_id, score):
 	req_proxy_tag.TagSetFields(poi_id, {'ReviewScore':str(score)})
 
 def main():
-	pois = iter_poi()
-	for poi in pois:
-		_score = get_score(poi)
+	poi_ids = iter_poi()
+	for poi_id in poi_ids:
+		_score = get_score(poi_id)
 		if _score > 0:
 			print _score
-			update_review_score(poi, _score)
+			update_review_score(poi_id, _score)
+		else:
+			print('No score for %d'%(poi_id))
 
 if __name__ == '__main__':
 	main()
