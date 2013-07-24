@@ -9,9 +9,8 @@ DB_USER = "kantuban"
 DB_PASSWORD = "UmkVpysZnsOh9hucwG22"
 DB_NAME = "ptpq"
 #POI_IDS_QUERY = "select tag_id from tag_product group by tag_id"
-POI_IDS_QUERY = 'select poi.id from poi, tag where tag.review_score > 0 and poi.id=tag.id'
-PRODUCT_IDS_QUERY = "select source, product_id, tag_id from tag_product where tag_id = %d group by source having max(create_date)"
-PRODUCT_IDS_HTTP = "http://lion:7070/tag_products/%d"
+POI_IDS_QUERY = 'select poi.id from poi, tag where tag.review_score < 0 and poi.id=tag.id'
+PRODUCT_IDS_HTTP = 'http://lion:7070/tag_products/%d'
 
 db = MySQLdb.connect(host=DB_SERVER,port=DB_SERVER_PORT, user=DB_USER, passwd=DB_PASSWORD, db=DB_NAME)
 
@@ -33,6 +32,16 @@ ProductSourceTripadvisor = 52 //Tripadvisor
 ProductSourceElongCity = 53 //艺龙城市
 ProductSourceSongguoCity = 54 //松果目的地
 """
+
+def iter_poi():
+	poi_cursor = db.cursor()
+	poi_cursor.execute(POI_IDS_QUERY)
+	
+	for _ in range(poi_cursor.rowcount):
+		poi_record = poi_cursor.fetchone()
+		yield poi_record[0]
+	
+	poi_cursor.close()
 
 def percentile_to_5(percentile_score):
 	return 5 * percentile_score
@@ -136,33 +145,12 @@ def update_review_score(poi_id, score):
 	req_proxy_tag.TagSetFields(poi_id, {'ReviewScore':str(score)})
 
 def main():
-	#db = MySQLdb.connect(host=DB_SERVER,port=DB_SERVER_PORT, user=DB_USER, passwd=DB_PASSWORD, db=DB_NAME)
-	#write_db = MySQLdb.connect(host=DB_SERVER,port=DB_SERVER_PORT, user=DB_USER, passwd=DB_PASSWORD, db=DB_NAME)
-	poi_cursor = db.cursor()
-	poi_cursor.execute(POI_IDS_QUERY)	
-	#product_db = MySQLdb.connect(host=DB_SERVER,port=DB_SERVER_PORT, user=DB_USER, passwd=DB_PASSWORD, db=DB_NAME)
-	#product_cursor = db.cursor()
-	
-	for _ in range(poi_cursor.rowcount):
-		poi_record = poi_cursor.fetchone()
-		#product_cursor.execute(PRODUCT_IDS_QUERY%(poi_record[0]))
-		#product_records = product_cursor.fetchall()
-		#poi_product = [(int(_record[0]), _record[1]) for _record in product_records]
-		
-		#product_ids = get_product_ids(poi_record[0])
-		#if product_ids:
-		_score = get_score(poi_record[0])
+	pois = iter_poi()
+	for poi in pois:
+		_score = get_score(poi)
 		if _score > 0:
 			print _score
-			#update_review_score(write_db, poi_record[0], _score)
-			update_review_score(poi_record[0], _score)
-	
-	#write_db.close()
-	
-	poi_cursor.close()
-	#product_cursor.close()
-	#db.close()
-
+			update_review_score(poi, _score)
 
 if __name__ == '__main__':
 	main()
