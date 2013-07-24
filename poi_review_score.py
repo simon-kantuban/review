@@ -10,10 +10,10 @@ DB_PASSWORD = "UmkVpysZnsOh9hucwG22"
 DB_NAME = "ptpq"
 #POI_IDS_QUERY = "select tag_id from tag_product group by tag_id"
 POI_IDS_QUERY = 'select poi.id from poi, tag where tag.review_score > 0 and poi.id=tag.id'
-
 PRODUCT_IDS_QUERY = "select source, product_id, tag_id from tag_product where tag_id = %d group by source having max(create_date)"
-
 PRODUCT_IDS_HTTP = "http://lion:7070/tag_products/%d"
+
+db = MySQLdb.connect(host=DB_SERVER,port=DB_SERVER_PORT, user=DB_USER, passwd=DB_PASSWORD, db=DB_NAME)
 
 """
 ProductSourceTongchengTicket = 1 //同程门票
@@ -82,13 +82,15 @@ score_dict = {
 			 	52:(score_5, 'daodao_comment_detail',1),
 			 }
 
-def get_score(db, product_ids):
+def get_score(pid):
 	_scores = {}
-	for (_source_id, _product_id) in product_ids:
-		if score_dict.has_key(_source_id):
-			_avg_score, _review_count = score_dict[_source_id][0](db, _product_id, score_dict[_source_id][1])
-			if (_avg_score > 0 and _review_count > 0):
-				_scores[_source_id] = [_avg_score, _review_count]
+	product_ids = get_product_ids(pid)
+	if product_ids:
+		for (_source_id, _product_id) in product_ids:
+			if score_dict.has_key(_source_id):
+				_avg_score, _review_count = score_dict[_source_id][0](db, _product_id, score_dict[_source_id][1])
+				if (_avg_score > 0 and _review_count > 0):
+					_scores[_source_id] = [_avg_score, _review_count]
 
 	if _scores:			
 		weight_score(_scores)
@@ -134,11 +136,10 @@ def update_review_score(poi_id, score):
 	req_proxy_tag.TagSetFields(poi_id, {'ReviewScore':str(score)})
 
 def main():
-	db = MySQLdb.connect(host=DB_SERVER,port=DB_SERVER_PORT, user=DB_USER, passwd=DB_PASSWORD, db=DB_NAME)
+	#db = MySQLdb.connect(host=DB_SERVER,port=DB_SERVER_PORT, user=DB_USER, passwd=DB_PASSWORD, db=DB_NAME)
 	#write_db = MySQLdb.connect(host=DB_SERVER,port=DB_SERVER_PORT, user=DB_USER, passwd=DB_PASSWORD, db=DB_NAME)
 	poi_cursor = db.cursor()
-	poi_cursor.execute(POI_IDS_QUERY)
-	
+	poi_cursor.execute(POI_IDS_QUERY)	
 	#product_db = MySQLdb.connect(host=DB_SERVER,port=DB_SERVER_PORT, user=DB_USER, passwd=DB_PASSWORD, db=DB_NAME)
 	#product_cursor = db.cursor()
 	
@@ -147,19 +148,20 @@ def main():
 		#product_cursor.execute(PRODUCT_IDS_QUERY%(poi_record[0]))
 		#product_records = product_cursor.fetchall()
 		#poi_product = [(int(_record[0]), _record[1]) for _record in product_records]
-		product_ids = get_product_ids(poi_record[0])
-		if product_ids:
-			_score = get_score(db, product_ids)
-			if _score > 0:
-				print _score
-				#update_review_score(write_db, poi_record[0], _score)
-				update_review_score(poi_record[0], _score)
+		
+		#product_ids = get_product_ids(poi_record[0])
+		#if product_ids:
+		_score = get_score(poi_record[0])
+		if _score > 0:
+			print _score
+			#update_review_score(write_db, poi_record[0], _score)
+			update_review_score(poi_record[0], _score)
 	
 	#write_db.close()
 	
 	poi_cursor.close()
 	#product_cursor.close()
-	db.close()
+	#db.close()
 
 
 if __name__ == '__main__':
