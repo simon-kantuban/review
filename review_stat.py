@@ -28,7 +28,6 @@ def get_trade(poi_id):
     
     return None
 
-
 def main():
         db = MySQLdb.connect(host=DB_SERVER,port=DB_SERVER_PORT, user=DB_USER, passwd=DB_PASSWORD, db=DB_NAME)
         poi_cursor = db.cursor()

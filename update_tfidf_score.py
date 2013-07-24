@@ -6,7 +6,7 @@ from review_tfidf_score import ReviewCorpus
 from review_dump import format_review
 from ictclas.cnseg_ext import *
 
-DB_SERVER = "192.168.0.186"
+DB_SERVER = "cheetah"
 DB_SERVER_PORT = 34890
 DB_USER = "kantuban"
 DB_PASSWORD = "UmkVpysZnsOh9hucwG22"
